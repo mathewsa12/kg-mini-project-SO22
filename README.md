@@ -1,2 +1,9 @@
-# kg-mini-project-SO22
-KG Mini Project SoSe 22
+# Mini-Project - Foundations of Knowledge Graphs
+
+## Classification of the remaining individuals from carcinogenesis
+
+#### Fact Validators
+
+Team Members (IMT Username): 
+Aabha Baboo Mathews (mathewsa)
+Palaniappan Muthuraman (palani)
