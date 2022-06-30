@@ -11,6 +11,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score,accuracy_score
 
+import warnings
+warnings.filterwarnings("ignore")
+
 def convertToTriples(graph):
     return np.asarray([[s,p,o] for s,p,o in graph])
 
@@ -19,11 +22,9 @@ def main():
 
 	cgns = Graph()
 	cgns.parse("carcinogenesis/carcinogenesis.owl")
-	# len(cgns)
 
 	triples = convertToTriples(cgns)
 	df = pd.DataFrame(data = triples,columns = ['s','p','o'])
-	# df.drop(['p','o'],axis = 1)
 
 	tf_owl = TriplesFactory.from_labeled_triples(triples=df.to_numpy())
 
@@ -34,7 +35,6 @@ def main():
 
 	g = Graph()
 	g.parse("kg22-carcinogenesis_lps1-train.ttl")
-	len(g)
 
 	trainTriples = convertToTriples(g)
 	train_df = pd.DataFrame(data = trainTriples,columns = ['lp','label','s'])
@@ -77,8 +77,8 @@ def main():
 	classifier.fit(X_train, y_train)
 
 	y_pred = classifier.predict(X_test)
-	print("Macro F1-Score: ", f1_score(y_test, y_pred, average="macro"))
-	print("Accuracy score:", accuracy_score(y_test,y_pred))
+	# print("Macro F1-Score: ", f1_score(y_test, y_pred, average="macro"))
+	# print("Accuracy score:", accuracy_score(y_test,y_pred))
 
 	Final_test = remaining_data[["labelencodeds","hrt"]]
 	final_prediction = classifier.predict(Final_test)
@@ -87,7 +87,6 @@ def main():
 
 	final_dataframe = remaining_data[['s','label','lp','p']]
 	final_dataframe = final_dataframe[final_dataframe['label'] == "https://lpbenchgen.org/property/includesResource"]
-	# final_dataframe
 
 	final_graph = Graph()
 	final_graph.namespace_manager.bind('lpclass', URIRef('https://lpbenchgen.org/class/'))
@@ -97,6 +96,9 @@ def main():
 	final_graph.namespace_manager.bind('lpprop', URIRef('https://lpbenchgen.org/property/'))
 	for i, row in final_dataframe.iterrows():
 		final_graph.add((URIRef(row['lp']), URIRef(row['label']), URIRef(row['s'])))
+
+	for i in labels: 
+		final_graph.add((URIRef(i), URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), URIRef('https://lpbenchgen.org/class/LearningProblem')))
 
 	final_graph.serialize(destination = 'classification_result.ttl', format='ttl')
 
